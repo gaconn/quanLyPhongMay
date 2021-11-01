@@ -4,14 +4,14 @@ function connectDB() {
     const connect = mysql.createConnection({
         host: process.env.DBHost || "localhost",
         user: process.env.DBUser || "root",
-        password: process.env.DBPassword || ""
+        password: process.env.DBPassword || "",
+        database: process.env.DBName
     });
-    connect.connect((err) => {
-        if (err) {
-            throw err;
-        }
-        console.log("Connected to database");
-    });
+    if (connect) {
+        console.log("connected to database");
+    } else {
+        console.log("cannot connect to database");
+    }
     return connect;
 }
 
