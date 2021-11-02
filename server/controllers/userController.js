@@ -1,5 +1,5 @@
 const dbConnect = require("../util/connectDB");
-const argon2 = require("argon2");
+const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 class userController {
@@ -21,11 +21,12 @@ class userController {
                             success: false,
                             message: "user or password is invalid"
                         });
-                    // const isPasswordTrue = await argon2.verify(
-                    //     result[0].password,
-                    //     "123"
-                    // );
-                    if (await argon2.verify(result[0].password, "123"))
+                    console.log(userInfo.password + "  " + result[0].password);
+                    const isTrue = await bcrypt.compare(
+                        userInfo.password,
+                        result[0].password
+                    );
+                    if (!isTrue)
                         return res.status(400).json({
                             success: false,
                             message: "username or password is not true"
@@ -63,7 +64,7 @@ class userController {
                             success: false,
                             message: "account already exist"
                         });
-                    const hash = await argon2.hash(userInfo.password);
+                    const hash = await bcrypt.hash(userInfo.password, 10);
                     userInfo.password = hash;
                     const newId = uuidv4();
                     const query =
