@@ -3,6 +3,28 @@ const bcrypt = require("bcrypt");
 const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 class userController {
+    //get /users/
+    //check if user logged in
+    checkUser(req, res, next) {
+        const { idUser } = req;
+        if (!idUser) {
+            return res
+                .status(400)
+                .json({ success: false, message: "user id missing" });
+        }
+        try {
+            const query = "select * from account where idUser=?";
+            dbConnect.query(query, [idUser], (err, result) => {
+                if (err) throw err;
+                if (result.length === 0) {
+                    return res
+                        .status(400)
+                        .json({ success: false, message: "user not found" });
+                }
+                return res.json({ success: true, user: result[0] });
+            });
+        } catch (error) {}
+    }
     //post /users/api/login
     login(req, res, next) {
         const userInfo = { ...req.body };
@@ -21,7 +43,6 @@ class userController {
                             success: false,
                             message: "user or password is invalid"
                         });
-                    console.log(userInfo.password + "  " + result[0].password);
                     const isTrue = await bcrypt.compare(
                         userInfo.password,
                         result[0].password
