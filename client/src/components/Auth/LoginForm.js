@@ -1,27 +1,39 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { history } from "react-router-dom";
+import AlertMessage from "../layout/AlertMessage";
+
+import { useHistory } from "react-router-dom";
 const LoginForm = () => {
     const [loginForm, setLoginForm] = useState({
-        username: "",
+        userName: "",
         password: ""
     });
+    const [alert, setAlert] = useState(null);
     const { loginUser } = useContext(AuthContext);
-    const { username, password } = loginForm;
-    const onchangeLoginForm = (e) =>
+    const history = useHistory();
+    const { userName, password } = loginForm;
+
+    const onchangeLoginForm = (e) => {
+        setAlert(null);
         setLoginForm({ ...loginForm, [e.target.name]: e.target.value });
+    };
     const login = async (event) => {
         event.preventDefault();
         try {
             const data = await loginUser(loginForm);
-            console.log(data);
-        } catch (error) {
-            console.log(error);
-        }
+            if (data.success) {
+                history.push("/dashboard");
+            } else {
+                setAlert({ info: "danger", message: data.message });
+            }
+        } catch (error) {}
     };
     return (
         <div className='loginContainer'>
             <div className=' loginForm'>
+                <div className='login-alert'>
+                    <AlertMessage type={alert} />
+                </div>
                 <form className='text-center d-block' onSubmit={login}>
                     <div className='row mb-3'>
                         <label className='col-sm-2 col-form-label'>Email</label>
@@ -29,8 +41,8 @@ const LoginForm = () => {
                             <input
                                 type='text'
                                 className='form-control'
-                                name='username'
-                                value={username}
+                                name='userName'
+                                value={userName}
                                 onChange={onchangeLoginForm}
                             />
                         </div>

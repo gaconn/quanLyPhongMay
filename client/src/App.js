@@ -5,6 +5,8 @@ import AuthContextProvider from "./components/contexts/AuthContext";
 //components
 import Landing from "./components/layout/Landing";
 import Auth from "./components/views/Auth";
+import Dashboard from "./components/views/Dashboard";
+import ProtectedRoute from "./components/routing/ProtectedRoute";
 function App() {
     return (
         <AuthContextProvider>
@@ -15,6 +17,11 @@ function App() {
                         exact
                         path='/login'
                         render={(props) => <Auth {...props} auth='login' />}
+                    />
+                    <ProtectedRoute
+                        exact
+                        path='/dashboard'
+                        component={Dashboard}
                     />
                 </Switch>
             </Router>
